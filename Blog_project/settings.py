@@ -173,3 +173,18 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env("EMAIL_USER")  # Fetch email from .env
 EMAIL_HOST_PASSWORD = env("EMAIL_PASS")  # Fetch password from .env
+
+
+SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000  # Enforce HTTPS for a year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+
+ALLOWED_HOSTS = [
+    'my-django-app-production-4091.up.railway.app',  # Add your Railway app URL here
+    'localhost',  # Localhost for local development
+    '127.0.0.1',  # Loopback address
+]

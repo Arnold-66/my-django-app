@@ -187,4 +187,7 @@ ALLOWED_HOSTS = [
     'my-django-app-production-4091.up.railway.app',  # Add your Railway app URL here
     'localhost',  # Localhost for local development
     '127.0.0.1',  # Loopback address
+    '127.0.0.1:8000'
+    'orotech.wuaze.com', 'my-django-app-production-4091.up.railway.app'
+
 ]

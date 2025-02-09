@@ -1,0 +1,177 @@
+{% extends 'blog/base2.html' %}
+
+{% block content %}
+<style>
+    #user-list {
+        background-color: #f7f7f7;
+        padding: 10px;
+        border-right: 1px solid #ccc;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    #user-list .list-group-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        cursor: pointer;
+    }
+
+    #user-list .list-group-item:hover {
+        background-color: #e9ecef;
+    }
+
+    .profile-pic {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    .chat-container {
+        display: flex;
+        height: 100vh;
+    }
+
+    #chat-area {
+        padding: 20px;
+        height: 100vh;
+        overflow-y: auto;
+        width: 75%;
+    }
+
+    .chat-box {
+        border-radius: 8px;
+        background-color: #f0f0f0;
+        padding: 10px;
+        max-height: 500px;
+        overflow-y: auto;
+        margin-bottom: 15px;
+    }
+
+    .message {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+
+    .sent .message-content {
+        background-color: #dcf8c6;
+        align-self: flex-end;
+    }
+
+    .received .message-content {
+        background-color: #ffffff;
+        align-self: flex-start;
+    }
+
+    .message-content {
+        padding: 10px;
+        border-radius: 15px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+
+    textarea {
+        resize: none;
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    small {
+        display: block;
+        text-align: right;
+        font-size: 0.8em;
+        color: #888;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="chat-container">
+        <!-- Sidebar with other users -->
+        <div class="col-md-3" id="user-list">
+            <h3>Chats</h3>
+            <div class="list-group" id="chat-list">
+                {% for user in users %}
+                    <a href="#chat-{{ user.username }}" class="list-group-item list-group-item-action"
+                       data-toggle="collapse">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="profile-pic">
+                        {% else %}
+                            <img src="/static/default-profile.png" alt="{{ user.username }}" class="profile-pic">
+                        {% endif %}
+                        <span>{{ user.username }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="col-md-9" id="chat-area">
+            <div class="collapse show" id="chat-{{ username|default:'' }}">
+                <h3>Chat with <span id="chat-username">{{ username|default:"Select a chat" }}</span></h3>
+
+                <!-- Display chat messages -->
+                <div class="chat-box" id="chat-box">
+                    {% for message in messages %}
+                        {% if message.sender == request.user or message.receiver == request.user %}
+                            <div class="message {% if message.sender == request.user %} sent {% else %} received {% endif %}">
+                                <div class="message-content">
+                                    <strong>{{ message.sender.username }}:</strong> {{ message.content }}
+                                    <small>{{ message.timestamp|date:"H:i" }}</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Send a new message -->
+                <form method="POST" action="{% url 'users:chat_view' username=username|default:'' %}">
+                    {% csrf_token %}
+                    <textarea name="message" class="form-control" placeholder="Type your message..." required></textarea>
+                    <button type="submit" class="btn btn-primary mt-2">Send</button>
+                </form>
+            </div>
+
+            <!-- Chat for other users -->
+            {% for user in users %}
+                <div class="collapse" id="chat-{{ user.username }}">
+                    <h4>Chat with {{ user.username }}</h4>
+                    <div class="chat-box">
+                        {% for message in messages %}
+                            {% if message.sender == user or message.receiver == user %}
+                                <div class="message {% if message.sender == request.user %} sent {% else %} received {% endif %}">
+                                    <div class="message-content">
+                                        <strong>{{ message.sender.username }}:</strong> {{ message.content }}
+                                        <small>{{ message.timestamp|date:"H:i" }}</small>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    $('.list-group-item').click(function() {
+        var username = $(this).find('span').text().trim();
+        $('#chat-username').text(username);
+        $('.collapse').collapse('hide');
+        $('#chat-' + username).collapse('show');
+    });
+});
+</script>
+
+{% endblock %}

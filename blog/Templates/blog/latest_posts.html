@@ -1,0 +1,40 @@
+{% extends 'blog/base2.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+<div class="container my-5">
+    <h1 class="text-center mb-5">Our Latest Blog Posts</h1>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">  <!-- Added mb-5 to space the bottom of the grid -->
+        {% for latest_post in latest_posts %}
+        <div class="col row-cols-2 row-cols-lg-5 g-2 g-lg-3" style="margin-bottom: 0.5em; width: 18rem; ">
+            <div class="card h-100  shadow-sm p-2 mb-4" >  <!-- Padding inside card, margin-bottom between cards -->
+                {% if latest_post.image %}
+                    <img src="{{ latest_post.image.url }}" class="card-img-top" alt="Blog post image" style="height: 100px; object-fit: cover;">
+                {% elif latest_post.video %}
+                    <video controls class="img-fluid" style="height: 100px; object-fit: cover;">
+                        <source src="{{ latest_post.video.url }}" type="video/mp4">
+                    </video>
+                {% else %}
+                    <img class=" article-img" 
+                    style="height: 100px; object-fit: cover;" 
+                         src="{{ MEDIA_URL }}post_images/default_image.png" >
+                {% endif %}
+
+                <div class="card-body p-2"> <!-- Padding inside card body -->
+                    <h5 class="card-title">{{ latest_post.title }}</h5>
+                    <p class="card-text">{{ latest_post.content|slice:":20" }}</p>
+                </div>
+                <a href="{% url 'blog:post-detail' latest_post.pk %}" class="btn btn-primary">Read More</a>
+                <div class="card-footer bg-transparent border-top-0 p-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted"><i class="bi bi-clock"></i> {{ latest_post.reading_time }} mins read</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

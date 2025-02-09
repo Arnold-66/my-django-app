@@ -1,0 +1,70 @@
+{% extends 'blog/base2.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script>
+        // Check if the browser supports geolocation
+        if (navigator.geolocation) {
+            // Get the user's current position
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+
+                // Send the location data to the server via an AJAX request
+                fetch("{% url 'users:update_location' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        latitude: latitude,
+                        longitude: longitude
+                    })
+                }).then(response => response.json())
+                  .then(data => console.log("Location updated", data));
+            });
+        }
+    </script>
+
+{% if messages %}
+<div class="alert alert-success">
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg p-4 rounded">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ user.profile.image.url }}" class="rounded-circle shadow-sm me-3" width="100" height="100" alt="Profile Image">
+                        <div style="margin-left: 2em;">
+                            <h3 class="fw-bold text-primary mb-1">{{ user.username }}</h3>
+                            <p class="text-muted mb-0">{{ user.profile.role|default:"Member" }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <p class="text-muted">{{ user.profile.bio|default:"No bio available." }}</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> {{ user.profile.location|default:"Unknown" }}</p>
+                </div>
+
+                <div class="card shadow-lg p-4 mt-4 rounded">
+                    <h4 class="fw-bold text-primary">Edit Profile</h4>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            {{ u_form|crispy }}
+                            {{ p_form|crispy }}
+                        </fieldset>
+                        <button class="btn btn-outline-primary mt-3" type="submit">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

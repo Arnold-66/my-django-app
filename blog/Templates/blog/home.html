@@ -1,0 +1,95 @@
+{% extends 'blog/base2.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+<style>
+    .no-margin-left {
+    margin-left: -25.8em !important;
+}
+    .no-padding-left {
+    padding-left: 0 !important;
+}
+</style>
+{% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="container my-5">
+    {% for post in page_obj %}
+    <div class="card mb-4 shadow-sm" style="max-width: 800px; margin: 0 auto;">
+        <div class="row no-gutters">
+            <!-- Image or Video Preview -->
+            <div class="col-md-4 {% if not post.image and not post.video %}d-none{% endif %}" style="padding: 2em;">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" class="card-img" alt="Blog post image" style="height: 200px; width: 200px;">
+                {% elif post.video %}
+                    <video controls class="w-100" style="height: 200px; width: 200px;">
+                        <source src="{{ post.video.url }}" type="video/mp4">
+                    </video>
+                {% endif %}
+            </div>
+            <div class="col-md-8 {% if not post.image and not post.video %}no-padding-left{% endif %}">
+                <div class="card-body">
+                    <h4 class="card-title">{{ post.title }}</h4>
+                    <p class="card-text text-justify ">{{ post.content|slice:":200" }}...</p>
+                </div>
+
+                <p class="text-muted small" style="margin-left: 1.5em;">
+                    <i class="far fa-clock"></i> Posted on {{ post.date_posted|date:"F d, Y" }} by
+                    <a href="{% url 'blog:user_posts' username=post.author.username %}">{{ post.author.username }}</a>
+                </p>
+
+                <!-- Like and View Counter -->
+                <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'blog:post-detail' post.id %}" data-post-id="{{ post.id }}" style="border: none; margin-right: 1em;">
+                            <i class="fa-solid fa-thumbs-up" style="font-size: 14px; color: dodgerblue;">
+                                {{ post.likes.count }}
+                            </i>
+                        </a>
+                        <span>
+                            <i class="fa-solid fa-eye" style="font-size: 14px; color: dodgerblue;">
+                                {{ post.views }}
+                            </i>
+                        </span>
+                    </div>
+                </div>
+                <!-- Read More Button -->
+                <div class="card-footer bg-transparent border-top-0 text-center {% if not post.image and not post.video %}no-margin-left{% endif %}" style="margin-left: -25.6em;">
+                    <a href="{% url 'blog:post-detail' post.id %}" class="btn btn-outline-primary btn-sm">Read More</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <div class="text-center">
+            <p>No posts found.</p>
+        </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <div class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-outline-secondary btn-sm" href="?page=1" style="margin-right: 1em;">First</a>
+                <a class="btn btn-outline-secondary btn-sm" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span class="mx-2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-outline-secondary btn-sm" href="?page={{ page_obj.next_page_number }}" style="margin-right: 1em;">Next</a>
+                <a class="btn btn-outline-secondary btn-sm" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

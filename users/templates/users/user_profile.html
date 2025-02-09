@@ -1,0 +1,107 @@
+{% extends 'blog/base2.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+{% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+
+<div class="bg-light min-vh-100 d-flex">
+    <div class="container-fluid py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="rounded contact-card bg-white rounded-4 shadow-sm overflow-hidden" style="width: 50em;">
+                    <div class="row g-0">
+                        <div class="col-md-4 bg-gradient d-flex align-items-center justify-content-center p-4">
+                            <img src="{{ profile.image.url }}" style="object-fit: cover; width: 200px;" class="rounded shadow-sm" alt="Profile Image">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h3 class="card-title mb-0 text-primary fw-bold">{{ profile.user.username }}</h3>
+                                    <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+                                        {{ profile.role }}
+                                    </span>
+                                </div>
+                                <p class="card-text text-muted mb-4">
+                                    {{ profile.bio|default:"No bio available." }}
+                                </p>
+
+                                {% if request.user != profile.user %}
+                                    <div class="d-flex gap-3 mb-4">
+                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ profile.user.email }}&su=Inquiry%20from%20{{ request.user.username }}&body=Hello%20{{ profile.user.username }},%0D%0A%0D%0AI came across your blog and would love to connect with you!%0D%0A%0D%0AYou can check my profile here: {{ request.build_absolute_uri }}%0D%0A%0D%0ALooking forward to hearing from you.%0D%0A%0D%0ARegards,%0D%0A{{ request.user.username }}" 
+                                        target="_blank"
+                                        class="btn btn-primary px-4 rounded-pill">
+                                            <i class="fas fa-envelope me-2"></i> Message
+                                        </a>
+                                    </div>
+                                {% endif %}
+
+
+
+
+                                <div class="border-top pt-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small">
+                                            <i class="fas fa-map-marker-alt me-2"></i>{{ profile.location|default:"No location specified" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if request.user == profile.user %}
+                <div class="bg-light min-vh-100 col-lg-12 mt-4">
+                    <div style="border-radius: 6px; width: 45em;">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                <legend class="border-bottom mb-4">Profile Info</legend>
+                                {{ u_form|crispy }}
+                                {{ p_form|crispy }}
+                            </fieldset>
+                            <div class="form-group">
+                                <button class="btn btn-outline-info" type="submit">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Show User Posts -->
+                <div class="mt-5">
+                    <h3 class="text-primary mb-3">{{ profile.user.username }}'s Posts</h3>
+                    {% if posts %}
+                        {% for post in posts %}
+                            <div class="card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{% url 'blog:post-detail' post.id %}" class="text-decoration-none text-dark">
+                                            {{ post.title }}
+                                        </a>
+                                    </h5>
+                                    <p class="card-text text-muted small">
+                                        <i class="far fa-clock"></i> {{ post.date_posted|date:"F d, Y" }}
+                                    </p>
+                                    <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                                    <a href="{% url 'blog:post-detail' post.id %}" class="btn btn-sm btn-outline-primary">Read More</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No posts available.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

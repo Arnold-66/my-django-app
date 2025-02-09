@@ -1,0 +1,57 @@
+{% extends 'blog/base2.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left: Annoucements (Non-Collapsible) -->
+
+
+        <div class="col-md-6">
+            <div class="card" style="padding: 20px; background: #f8f9fa; border-radius: 15px; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-body" style="position: relative; max-height: 710px; overflow-y: scroll;" data-bs-spy="scroll" data-bs-target="#event-list" data-bs-offset="0" tabindex="0">
+                    <h2>Announcements</h2>
+                    <div >
+                        <ul class="list-unstyled mb-0">
+                            {% for announcement in announcements %}
+                            <div class="row" style="border: none; background-color: #eaecee; margin-bottom: 1em; border-radius: 15px; padding: 5px; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);"">
+                                <div class="" style="margin-left: 2em;">
+                                <h3 style="color: blue;"><strong>{{ announcement.title }}</strong></h3>
+                                <p>Announcement Date: ({{ announcement.created_at|date:"M d, Y" }})</p>
+                                <p>{{ announcement.content }}</p>
+                                <p>{{ announcement.user }}</p>
+                                </div>
+                            </div>
+                                
+                            {% empty %}
+                                <p>No no announcements available.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Create >Announcement Form (Collapsible) -->
+        <div class="col-md-6">
+            <div class="card" style="background: #f8f9fa; cursor: pointer; border-radius: 15px; box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="border-bottom: none;" data-toggle="collapse" data-target="#createAnnouncement" aria-expanded="false" aria-controls="createEvent">
+                    <strong>Post Announcement</strong>
+                </div>
+                <div id="createAnnouncement" class="collapse show">
+                    <div class="card-body" id="announcements">
+                        <form method="POST" action="{% url 'blog:announcements_list' %}">
+                            {% csrf_token %}
+                            {{ a_form| crispy }}
+                            <button type="submit" class="btn btn-primary">Post Announcement</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

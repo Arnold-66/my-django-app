@@ -1,0 +1,83 @@
+{% extends 'base2.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <div class="comment-section">
+        <!-- New Comment Form -->
+        {% if user.is_authenticated %}
+        <div class="mb-4">
+            <div class="d-flex gap-3">
+                <img src="https://randomuser.me/api/portraits/women/4.jpg" alt="User Avatar" class="user-avatar">
+                <div class="flex-grow-1">
+                    <!-- Comment Form -->
+                    <h4>Add a comment</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ comment_form|crispy }}
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                    <div class="mt-3 text-end">
+                        <button class="btn btn-comment text-white">Post Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <p>You must be logged in to comment.</p>
+        {% endif %}
+
+        <!-- Comments List -->
+        <div class="comments-list">
+            <!-- Comment 1 -->
+            {% for comment in object.comments.all %}
+            <div class="comment-box">
+                <div class="d-flex gap-3">
+                    <img src="https://randomuser.me/api/portraits/men/34.jpg" alt="User Avatar" class="user-avatar">
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">{{ comment.author }}</h6>
+                            <span class="comment-time">{{ comment.date_posted|timesince }} ago</span>
+                        </div>
+                        <p class="mb-2">{{ comment.content }}</p>
+                        <div class="comment-actions">
+                            <a href="#"><i class="bi bi-heart"></i> Like</a>
+                            <a href="#"><i class="bi bi-reply"></i> Reply</a>
+                            <a href="#"><i class="bi bi-share"></i> Share</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No comments yet. Be the first to comment!</p>
+            {% endfor %}
+
+
+
+
+
+
+                <!-- Reply Section -->
+                <div class="reply-section mt-3">
+                    <div class="comment-box">
+                        <div class="d-flex gap-3">
+                            <img src="https://randomuser.me/api/portraits/women/64.jpg" alt="User Avatar" class="user-avatar">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Jane Smith</h6>
+                                    <span class="comment-time">1 hour ago</span>
+                                </div>
+                                <p class="mb-2">Totally agree with you! The points mentioned are very insightful.
+                                </p>
+                                <div class="comment-actions">
+                                    <a href="#"><i class="bi bi-heart"></i> Like</a>
+                                    <a href="#"><i class="bi bi-reply"></i> Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

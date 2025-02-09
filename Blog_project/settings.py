@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,6 +55,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+
+
 
 ROOT_URLCONF = 'Blog_project.urls'
 
@@ -135,6 +139,26 @@ LOGIN_URL = 'login'
 
 # settings.py
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+import dj_database_url
+import dj_database_url
+DATABASES = {
+    'default': dj_database_url.config(default='postgresql://postgres:iZjmeBacraqfavgIVLsOdKRLjOHDEeOt@roundhouse.proxy.rlwy.net:54911/railway')
+}
+
+import environ
+
+# Initialize environment variables
+env = environ.Env()
+environ.Env.read_env()
+
+# Use environment variables for settings
+SECRET_KEY = env('SECRET_KEY', default='d8xy#ianljmljsw(wn0cpg49zrsq@6$r($i#u_-cuxy#qa)cx0')
+
+DEBUG = env('DEBUG', default=False)
+
+
 
 import environ
 import os
